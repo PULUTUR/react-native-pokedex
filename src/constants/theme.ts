@@ -14,6 +14,7 @@ export const Colors = {
   border: '#E5E7F0',
   pill: '#DFE6F3',
   overlay: 'rgba(14, 9, 64, 0.35)',
+  shadow: 'rgba(14, 9, 64, 0.08)',
 } as const;
 
 export const TypeColors = {

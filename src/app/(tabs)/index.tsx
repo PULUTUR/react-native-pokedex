@@ -1,14 +1,112 @@
-import { StyleSheet } from 'react-native';
+import { router } from 'expo-router';
+import { useState } from 'react';
+import { ActivityIndicator, FlatList, Share, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ErrorState } from '@/components/error-state';
+import { LoadingState } from '@/components/loading-state';
+import { PokemonCard } from '@/components/pokemon-card';
+import { PokemonOptionsSheet } from '@/components/pokemon-options-sheet';
 import { ScreenTitle } from '@/components/screen-title';
-import { Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
+import { usePokemonList } from '@/hooks/use-pokemon-list';
+import { getShareMessage, type PokemonListItem } from '@/utils/pokemon';
 
-// The grid comes with issue "Pokémon list" (specs/features/pokemon-list.md).
+const SCREEN_PADDING = Spacing.xl;
+const COLUMN_GAP = Spacing.lg;
+
+function openPokemon(pokemon: PokemonListItem) {
+  router.push({ pathname: '/pokemon/[id]', params: { id: String(pokemon.id) } });
+}
+
 export default function PokemonListScreen() {
+  const {
+    data,
+    isPending,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetchNextPageError,
+  } = usePokemonList();
+  const { width } = useWindowDimensions();
+  const cardWidth = (width - SCREEN_PADDING * 2 - COLUMN_GAP) / 2;
+
+  // `selected` stays set after closing, so the sheet keeps its content while it fades out.
+  const [selected, setSelected] = useState<PokemonListItem | null>(null);
+  const [optionsVisible, setOptionsVisible] = useState(false);
+
+  function showOptions(pokemon: PokemonListItem) {
+    setSelected(pokemon);
+    setOptionsVisible(true);
+  }
+
+  function handleOpen() {
+    setOptionsVisible(false);
+    if (selected) openPokemon(selected);
+  }
+
+  function handleShare() {
+    setOptionsVisible(false);
+    if (selected) Share.share({ message: getShareMessage(selected) });
+  }
+
+  // A failed next page only shows a retry in the footer, so the user taps it
+  // instead of it being retried on every scroll.
+  function loadMore() {
+    if (hasNextPage && !isFetchingNextPage && !isFetchNextPageError) {
+      fetchNextPage();
+    }
+  }
+
+  if (isPending || !data) {
+    return (
+      <SafeAreaView style={[styles.container, styles.padded]} edges={['top']}>
+        <ScreenTitle>All Pokémon</ScreenTitle>
+        {isPending ? (
+          <LoadingState />
+        ) : (
+          <ErrorState message="Could not load the Pokémon." onRetry={() => refetch()} />
+        )}
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <ScreenTitle>All Pokémon</ScreenTitle>
+      <FlatList
+        data={data}
+        keyExtractor={(pokemon) => String(pokemon.id)}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        contentContainerStyle={styles.content}
+        ListHeaderComponent={<ScreenTitle>All Pokémon</ScreenTitle>}
+        renderItem={({ item }) => (
+          <PokemonCard
+            pokemon={item}
+            width={cardWidth}
+            onPress={() => openPokemon(item)}
+            onOptionsPress={() => showOptions(item)}
+          />
+        )}
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={
+          isFetchNextPageError ? (
+            <ErrorState message="Could not load more Pokémon." onRetry={() => fetchNextPage()} />
+          ) : isFetchingNextPage ? (
+            <View style={styles.footer}>
+              <ActivityIndicator color={Colors.primary} />
+            </View>
+          ) : null
+        }
+      />
+      <PokemonOptionsSheet
+        visible={optionsVisible}
+        onClose={() => setOptionsVisible(false)}
+        onOpen={handleOpen}
+        onShare={handleShare}
+      />
     </SafeAreaView>
   );
 }
@@ -16,7 +114,21 @@ export default function PokemonListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: Spacing.xl,
+  },
+  padded: {
+    paddingHorizontal: SCREEN_PADDING,
     paddingTop: Spacing.xl,
+  },
+  content: {
+    paddingHorizontal: SCREEN_PADDING,
+    paddingTop: Spacing.xl,
+    paddingBottom: Spacing.xl,
+  },
+  row: {
+    gap: COLUMN_GAP,
+    marginBottom: COLUMN_GAP,
+  },
+  footer: {
+    padding: Spacing.xl,
   },
 });
