@@ -1,65 +1,64 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://unistyl.es/), etc.
- */
-
-import '@/global.css';
-
-import { Platform } from 'react-native';
+// All colours, fonts and spacing of the app. Values come from the Figma
+// screenshots in docs/figma/. Screens never use a hard-coded colour.
 
 export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
+  background: '#EDF6FF',
+  surface: '#FFFFFF',
+  cardImage: '#F6F7FF',
+  text: '#0E0940',
+  textSecondary: '#7D7A99',
+  textMuted: '#B4B8CC',
+  primary: '#5631E8',
+  onPrimary: '#FFFFFF',
+  favorite: '#F25C6A',
+  border: '#E5E7F0',
+  pill: '#DFE6F3',
+  overlay: 'rgba(14, 9, 64, 0.35)',
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export const TypeColors = {
+  normal: '#A8A77A',
+  fire: '#F25C6A',
+  water: '#6390F0',
+  electric: '#F7D02C',
+  grass: '#6BC155',
+  ice: '#96D9D6',
+  fighting: '#C22E28',
+  poison: '#A33EA1',
+  ground: '#E2BF65',
+  flying: '#A98FF3',
+  psychic: '#F95587',
+  bug: '#A6B91A',
+  rock: '#B6A136',
+  ghost: '#735797',
+  dragon: '#6F35FC',
+  dark: '#705746',
+  steel: '#B7B7CE',
+  fairy: '#D685AD',
+} as const;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+export type PokemonType = keyof typeof TypeColors;
+
+// Keys are the names used with useFonts in src/app/_layout.tsx.
+export const Fonts = {
+  regular: 'Rubik-Regular',
+  medium: 'Rubik-Medium',
+  semiBold: 'Rubik-SemiBold',
+  bold: 'Rubik-Bold',
+} as const;
 
 export const Spacing = {
-  half: 2,
-  one: 4,
-  two: 8,
-  three: 16,
-  four: 24,
-  five: 32,
-  six: 64,
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
+  xxl: 32,
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+export const Radius = {
+  sm: 4,
+  md: 8,
+  lg: 12,
+  pill: 999,
+} as const;
