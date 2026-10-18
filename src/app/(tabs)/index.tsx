@@ -1,19 +1,19 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, FlatList, Share, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Share, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { EmptyState } from '@/components/empty-state';
 import { ErrorState } from '@/components/error-state';
 import { LoadingState } from '@/components/loading-state';
-import { PokemonCard } from '@/components/pokemon-card';
+import { PokemonGrid, SCREEN_PADDING } from '@/components/pokemon-grid';
 import { PokemonOptionsSheet } from '@/components/pokemon-options-sheet';
 import { ScreenTitle } from '@/components/screen-title';
+import { SearchBar } from '@/components/search-bar';
 import { Colors, Spacing } from '@/constants/theme';
 import { usePokemonList } from '@/hooks/use-pokemon-list';
+import { usePokemonSearch } from '@/hooks/use-pokemon-search';
 import { getShareMessage, type PokemonListItem } from '@/utils/pokemon';
-
-const SCREEN_PADDING = Spacing.xl;
-const COLUMN_GAP = Spacing.lg;
 
 function openPokemon(pokemon: PokemonListItem) {
   router.push({ pathname: '/pokemon/[id]', params: { id: String(pokemon.id) } });
@@ -29,8 +29,9 @@ export default function PokemonListScreen() {
     isFetchingNextPage,
     isFetchNextPageError,
   } = usePokemonList();
-  const { width } = useWindowDimensions();
-  const cardWidth = (width - SCREEN_PADDING * 2 - COLUMN_GAP) / 2;
+
+  const [query, setQuery] = useState('');
+  const search = usePokemonSearch(query);
 
   // `selected` stays set after closing, so the sheet keeps its content while it fades out.
   const [selected, setSelected] = useState<PokemonListItem | null>(null);
@@ -51,6 +52,17 @@ export default function PokemonListScreen() {
     if (selected) Share.share({ message: getShareMessage(selected) });
   }
 
+  // Clearing the field ends the search, just like the back arrow.
+  function handleChangeQuery(text: string) {
+    setQuery(text);
+    if (!text) Keyboard.dismiss();
+  }
+
+  function stopSearching() {
+    setQuery('');
+    Keyboard.dismiss();
+  }
+
   // A failed next page only shows a retry in the footer, so the user taps it
   // instead of it being retried on every scroll.
   function loadMore() {
@@ -59,39 +71,47 @@ export default function PokemonListScreen() {
     }
   }
 
-  if (isPending || !data) {
+  function renderSearchResults() {
+    if (search.isPending) {
+      return <LoadingState />;
+    }
+    if (search.isError) {
+      return <ErrorState message="Could not search the Pokémon." onRetry={() => search.refetch()} />;
+    }
+    if (search.results.length === 0) {
+      return <EmptyState message="No Pokémon found" />;
+    }
     return (
-      <SafeAreaView style={[styles.container, styles.padded]} edges={['top']}>
-        <ScreenTitle>All Pokémon</ScreenTitle>
-        {isPending ? (
-          <LoadingState />
-        ) : (
-          <ErrorState message="Could not load the Pokémon." onRetry={() => refetch()} />
-        )}
-      </SafeAreaView>
+      <PokemonGrid
+        data={search.results}
+        onPokemonPress={openPokemon}
+        onOptionsPress={showOptions}
+      />
     );
   }
 
-  return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <FlatList
+  function renderList() {
+    if (isPending || !data) {
+      return (
+        <View style={[styles.container, styles.padded]}>
+          <ScreenTitle>All Pokémon</ScreenTitle>
+          {isPending ? (
+            <LoadingState />
+          ) : (
+            <ErrorState message="Could not load the Pokémon." onRetry={() => refetch()} />
+          )}
+        </View>
+      );
+    }
+
+    return (
+      <PokemonGrid
         data={data}
-        keyExtractor={(pokemon) => String(pokemon.id)}
-        numColumns={2}
-        columnWrapperStyle={styles.row}
-        contentContainerStyle={styles.content}
-        ListHeaderComponent={<ScreenTitle>All Pokémon</ScreenTitle>}
-        renderItem={({ item }) => (
-          <PokemonCard
-            pokemon={item}
-            width={cardWidth}
-            onPress={() => openPokemon(item)}
-            onOptionsPress={() => showOptions(item)}
-          />
-        )}
+        onPokemonPress={openPokemon}
+        onOptionsPress={showOptions}
+        header={<ScreenTitle>All Pokémon</ScreenTitle>}
         onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
+        footer={
           isFetchNextPageError ? (
             <ErrorState message="Could not load more Pokémon." onRetry={() => fetchNextPage()} />
           ) : isFetchingNextPage ? (
@@ -101,6 +121,22 @@ export default function PokemonListScreen() {
           ) : null
         }
       />
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.searchBar}>
+        <SearchBar
+          value={query}
+          onChangeText={handleChangeQuery}
+          isSearching={search.isSearching}
+          onBack={stopSearching}
+        />
+      </View>
+      {search.isSearching && <View style={styles.container}>{renderSearchResults()}</View>}
+      {/* Hidden instead of unmounted while searching, so the list keeps its scroll position. */}
+      <View style={[styles.container, search.isSearching && styles.hidden]}>{renderList()}</View>
       <PokemonOptionsSheet
         visible={optionsVisible}
         onClose={() => setOptionsVisible(false)}
@@ -115,18 +151,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  hidden: {
+    display: 'none',
+  },
+  searchBar: {
+    paddingHorizontal: SCREEN_PADDING,
+    paddingTop: Spacing.lg,
+  },
   padded: {
     paddingHorizontal: SCREEN_PADDING,
     paddingTop: Spacing.xl,
-  },
-  content: {
-    paddingHorizontal: SCREEN_PADDING,
-    paddingTop: Spacing.xl,
-    paddingBottom: Spacing.xl,
-  },
-  row: {
-    gap: COLUMN_GAP,
-    marginBottom: COLUMN_GAP,
   },
   footer: {
     padding: Spacing.xl,
