@@ -1,3 +1,28 @@
+# Pokédex
+
+A Pokédex app (school final assignment) on [PokeAPI](https://pokeapi.co/docs/v2): list, search, detail, evolution chain, favorites and compare.
+
+## Stack and structure
+
+- Expo Router, TanStack Query, expo-sqlite. Must run in **Expo Go**: no libraries that need a development build.
+- Screens in `src/app/`, data through hooks in `src/hooks/`, API calls and SQL in `src/services/`, reusable UI in `src/components/`.
+- Screens never call `fetch` or SQLite directly; they use a hook. Pure logic (filtering, mapping API data) lives in its own function so it can be tested without UI.
+- Colours, fonts and spacing only from `src/constants/theme.ts`. No hard-coded colours in components.
+- Every load has a loading state and an error state with a "Try again" button.
+- Design: follow the Figma screenshots in `docs/figma/`. Font: Rubik (`Fonts` in the theme).
+- Specs: `specs/product.md` and `specs/features/*.md`. Build only what the feature spec says; its Out of Scope is a hard limit.
+
+## Workflow
+
+- One GitHub issue per feature, one branch per issue: `feature/<issue-number>-<short-name>`.
+- First post a plan with a `- [ ]` task list on the issue (`gh issue comment`). Wait for my "go" before writing code.
+- Small commits. Run `npm run lint` and `npm run typecheck` before saying a task is done.
+- Pull request body contains `closes #<number>`. Merge with a merge commit, **never squash**.
+- Never force-push, never rewrite history. My git history is part of my hand-in.
+- After running a generator (`create-expo-app` etc.), check that it did not create its own `.git` and run `git log` to confirm the history is intact.
+
+---
+
 This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
 
 ## Expo has changed — do not trust your training data
