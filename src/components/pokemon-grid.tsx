@@ -48,6 +48,9 @@ export function PokemonGrid({
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
       ListFooterComponent={footer}
+      // A tap on a card works while the search keyboard is open.
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
     />
   );
 }
