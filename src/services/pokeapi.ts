@@ -5,6 +5,9 @@ const BASE_URL = 'https://pokeapi.co/api/v2';
 
 export const PAGE_SIZE = 20;
 
+// More than the number of Pokémon in PokeAPI, so one page holds all of them.
+const ALL_POKEMON_LIMIT = 2000;
+
 export type NamedResource = {
   name: string;
   url: string;
@@ -27,4 +30,10 @@ async function getJson<T>(path: string): Promise<T> {
 
 export function fetchPokemonPage(offset: number) {
   return getJson<PokemonPage>(`/pokemon?limit=${PAGE_SIZE}&offset=${offset}`);
+}
+
+// PokeAPI has no search endpoint, so search loads every name once and filters
+// on the phone.
+export function fetchAllPokemonNames() {
+  return getJson<PokemonPage>(`/pokemon?limit=${ALL_POKEMON_LIMIT}`);
 }
