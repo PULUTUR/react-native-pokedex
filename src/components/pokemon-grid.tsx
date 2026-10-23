@@ -36,7 +36,8 @@ export function PokemonGrid({
       numColumns={2}
       columnWrapperStyle={styles.row}
       contentContainerStyle={styles.content}
-      ListHeaderComponent={header}
+      // React Native 0.88 types accept undefined here, but not null.
+      ListHeaderComponent={header ?? undefined}
       renderItem={({ item }) => (
         <PokemonCard
           pokemon={item}
@@ -47,7 +48,7 @@ export function PokemonGrid({
       )}
       onEndReached={onEndReached}
       onEndReachedThreshold={0.5}
-      ListFooterComponent={footer}
+      ListFooterComponent={footer ?? undefined}
       // A tap on a card works while the search keyboard is open.
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
