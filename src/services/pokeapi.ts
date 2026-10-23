@@ -20,6 +20,24 @@ export type PokemonPage = {
   results: NamedResource[];
 };
 
+// Only the fields of /pokemon/{id} the app uses.
+export type ApiPokemon = {
+  id: number;
+  name: string;
+  base_experience: number | null;
+  height: number; // decimetres
+  weight: number; // hectograms
+  types: { slot: number; type: NamedResource }[];
+  abilities: { ability: NamedResource; is_hidden: boolean; slot: number }[];
+  stats: { base_stat: number; stat: NamedResource }[];
+  sprites: {
+    front_default: string | null;
+    other?: {
+      'official-artwork'?: { front_default: string | null };
+    };
+  };
+};
+
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(`${BASE_URL}${path}`);
   if (!response.ok) {
@@ -36,4 +54,8 @@ export function fetchPokemonPage(offset: number) {
 // on the phone.
 export function fetchAllPokemonNames() {
   return getJson<PokemonPage>(`/pokemon?limit=${ALL_POKEMON_LIMIT}`);
+}
+
+export function fetchPokemon(id: number) {
+  return getJson<ApiPokemon>(`/pokemon/${id}`);
 }

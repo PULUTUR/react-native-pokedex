@@ -15,6 +15,7 @@ export const Colors = {
   pill: '#DFE6F3',
   overlay: 'rgba(14, 9, 64, 0.35)',
   shadow: 'rgba(14, 9, 64, 0.08)',
+  transparent: 'transparent',
 } as const;
 
 export const TypeColors = {
