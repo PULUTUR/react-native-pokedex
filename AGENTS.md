@@ -5,7 +5,7 @@ A Pokédex app (school final assignment) on [PokeAPI](https://pokeapi.co/docs/v2
 ## Stack and structure
 
 - Expo Router, TanStack Query, expo-sqlite. Must run in **Expo Go**: no libraries that need a development build.
-- Stay on **Expo SDK 57**: that is what Expo Go in the Play Store runs. Never upgrade the SDK, and use the v57 docs (`https://docs.expo.dev/versions/v57.0.0/`).
+- Stay on **Expo SDK 58**: that is what Expo Go in the Play Store runs. Never upgrade the SDK, and use the v58 docs (`https://docs.expo.dev/versions/v58.0.0/`).
 - Screens in `src/app/`, data through hooks in `src/hooks/`, API calls and SQL in `src/services/`, reusable UI in `src/components/`.
 - Screens never call `fetch` or SQLite directly; they use a hook. Pure logic (filtering, mapping API data) lives in its own function so it can be tested without UI.
 - Colours, fonts and spacing only from `src/constants/theme.ts`. No hard-coded colours in components.
