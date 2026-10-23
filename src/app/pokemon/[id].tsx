@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
@@ -10,16 +10,23 @@ import { AboutTab } from '@/components/about-tab';
 import { DetailHeader, HEADER_BAR_HEIGHT } from '@/components/detail-header';
 import { type DetailTab, DetailTabs } from '@/components/detail-tabs';
 import { ErrorState } from '@/components/error-state';
+import { EvolutionTab } from '@/components/evolution-tab';
 import { LoadingState } from '@/components/loading-state';
 import { StatsTab } from '@/components/stats-tab';
 import { TypePill } from '@/components/type-pill';
 import { Colors, Fonts, Spacing } from '@/constants/theme';
 import { usePokemonDetail } from '@/hooks/use-pokemon-detail';
-import { formatNumber } from '@/utils/pokemon';
+import { formatNumber, type PokemonListItem } from '@/utils/pokemon';
 
 const ARTWORK_SIZE = 220;
 // How far the artwork hangs below the blue top area into the white part.
 const ARTWORK_OVERLAP = 64;
+
+// Push, not navigate: every Pokémon from the chain gets its own screen on the
+// stack, so back returns to the one before.
+function openPokemon(pokemon: PokemonListItem) {
+  router.push({ pathname: '/pokemon/[id]', params: { id: String(pokemon.id) } });
+}
 
 export default function PokemonDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -92,7 +99,9 @@ export default function PokemonDetailScreen() {
           <View style={styles.tabContent}>
             {activeTab === 'about' && <AboutTab pokemon={pokemon} />}
             {activeTab === 'stats' && <StatsTab stats={pokemon.stats} />}
-            {/* The evolution chain comes with its own issue (#4). */}
+            {activeTab === 'evolution' && (
+              <EvolutionTab speciesId={pokemon.speciesId} onSelect={openPokemon} />
+            )}
           </View>
         </View>
       </Animated.ScrollView>
