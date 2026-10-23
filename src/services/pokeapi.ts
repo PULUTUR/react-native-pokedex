@@ -30,12 +30,31 @@ export type ApiPokemon = {
   types: { slot: number; type: NamedResource }[];
   abilities: { ability: NamedResource; is_hidden: boolean; slot: number }[];
   stats: { base_stat: number; stat: NamedResource }[];
+  species: NamedResource;
   sprites: {
     front_default: string | null;
     other?: {
       'official-artwork'?: { front_default: string | null };
     };
   };
+};
+
+// Only the fields of /pokemon-species/{id} the app uses.
+export type ApiPokemonSpecies = {
+  id: number;
+  evolution_chain: { url: string } | null;
+};
+
+// One step in the tree of /evolution-chain/{id}. Evolution conditions
+// (evolution_details) are out of scope, so they are not typed.
+export type ApiChainLink = {
+  species: NamedResource;
+  evolves_to: ApiChainLink[];
+};
+
+export type ApiEvolutionChain = {
+  id: number;
+  chain: ApiChainLink;
 };
 
 async function getJson<T>(path: string): Promise<T> {
@@ -58,4 +77,12 @@ export function fetchAllPokemonNames() {
 
 export function fetchPokemon(id: number) {
   return getJson<ApiPokemon>(`/pokemon/${id}`);
+}
+
+export function fetchPokemonSpecies(id: number) {
+  return getJson<ApiPokemonSpecies>(`/pokemon-species/${id}`);
+}
+
+export function fetchEvolutionChain(id: number) {
+  return getJson<ApiEvolutionChain>(`/evolution-chain/${id}`);
 }

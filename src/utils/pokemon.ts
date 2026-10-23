@@ -23,6 +23,8 @@ export type PokemonStat = {
 
 export type PokemonDetail = {
   id: number;
+  // Same as id for normal Pokémon; differs for alternative forms (ids above 10000).
+  speciesId: number;
   name: string;
   artworkUrl: string | null;
   types: PokemonType[];
@@ -122,6 +124,7 @@ function isPokemonType(name: string): name is PokemonType {
 export function toPokemonDetail(pokemon: ApiPokemon): PokemonDetail {
   return {
     id: pokemon.id,
+    speciesId: getIdFromUrl(pokemon.species.url),
     name: formatName(pokemon.name),
     artworkUrl:
       pokemon.sprites.other?.['official-artwork']?.front_default ??
