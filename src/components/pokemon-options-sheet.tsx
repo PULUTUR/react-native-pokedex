@@ -12,6 +12,8 @@ type Props = {
   onClose: () => void;
   onOpen: () => void;
   onShare: () => void;
+  isFavorite?: boolean;
+  onToggleFavorite?: () => void;
 };
 
 function SheetItem({ icon, label, onPress }: { icon: IconName; label: string; onPress: () => void }) {
@@ -28,7 +30,7 @@ function SheetItem({ icon, label, onPress }: { icon: IconName; label: string; on
 
 // Bottom sheet from the Figma "Options" screen, opened with a card's ⋮ button.
 // Built on React Native's Modal, so it needs no extra library.
-export function PokemonOptionsSheet({ visible, onClose, onOpen, onShare }: Props) {
+export function PokemonOptionsSheet({ visible, onClose, onOpen, onShare, isFavorite, onToggleFavorite }: Props) {
   const insets = useSafeAreaInsets();
 
   return (
@@ -46,6 +48,13 @@ export function PokemonOptionsSheet({ visible, onClose, onOpen, onShare }: Props
           accessibilityLabel="Close options"
         />
         <View style={[styles.sheet, { paddingBottom: insets.bottom + Spacing.lg }]}>
+          {onToggleFavorite && (
+            <SheetItem
+              icon={isFavorite ? 'heart-minus-outline' : 'heart-plus-outline'}
+              label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+              onPress={() => { onToggleFavorite(); onClose(); }}
+            />
+          )}
           <SheetItem icon="arrow-expand" label="Open Pokémon" onPress={onOpen} />
           <SheetItem icon="share-variant-outline" label="Share" onPress={onShare} />
         </View>

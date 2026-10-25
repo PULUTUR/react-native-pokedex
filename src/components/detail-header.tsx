@@ -10,6 +10,8 @@ import Animated, {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Colors, Fonts, Spacing } from '@/constants/theme';
+import { useIsFavorite, useToggleFavorite } from '@/hooks/use-favorites';
+import type { PokemonListItem } from '@/utils/pokemon';
 
 export const HEADER_BAR_HEIGHT = 56;
 
@@ -26,6 +28,7 @@ type Props = {
   scrollY?: SharedValue<number>;
   // Heart and compare are only shown once a Pokémon is loaded.
   showActions?: boolean;
+  pokemon?: PokemonListItem;
 };
 
 function goBack() {
@@ -38,8 +41,10 @@ function goBack() {
 
 // Detail header from the Figma: back arrow, heart and compare. When scrolling
 // down it shows the name in the middle (Figma "Evolution Detail").
-export function DetailHeader({ title, scrollY, showActions = false }: Props) {
+export function DetailHeader({ title, scrollY, showActions = false, pokemon }: Props) {
   const insets = useSafeAreaInsets();
+  const { data: isFav } = useIsFavorite(pokemon?.id ?? 0);
+  const toggleFavorite = useToggleFavorite();
 
   const titleStyle = useAnimatedStyle(() => ({
     opacity: scrollY
@@ -78,12 +83,16 @@ export function DetailHeader({ title, scrollY, showActions = false }: Props) {
                   color={Colors.text}
                 />
               </Pressable>
-              {/* No behaviour yet: favorites come with issue #5. */}
               <Pressable
                 hitSlop={Spacing.sm}
                 accessibilityRole="button"
-                accessibilityLabel="Add to favorites">
-                <MaterialCommunityIcons name="heart-outline" size={ICON_SIZE} color={Colors.text} />
+                accessibilityLabel={isFav ? 'Remove from favorites' : 'Add to favorites'}
+                onPress={() => pokemon && toggleFavorite(pokemon)}>
+                <MaterialCommunityIcons
+                  name={isFav ? 'heart' : 'heart-outline'}
+                  size={ICON_SIZE}
+                  color={isFav ? Colors.favorite : Colors.text}
+                />
               </Pressable>
             </>
           )}

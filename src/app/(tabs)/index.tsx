@@ -11,6 +11,7 @@ import { PokemonOptionsSheet } from '@/components/pokemon-options-sheet';
 import { ScreenTitle } from '@/components/screen-title';
 import { SearchBar } from '@/components/search-bar';
 import { Colors, Spacing } from '@/constants/theme';
+import { useIsFavorite, useToggleFavorite } from '@/hooks/use-favorites';
 import { usePokemonList } from '@/hooks/use-pokemon-list';
 import { usePokemonSearch } from '@/hooks/use-pokemon-search';
 import { getShareMessage, type PokemonListItem } from '@/utils/pokemon';
@@ -36,6 +37,8 @@ export default function PokemonListScreen() {
   // `selected` stays set after closing, so the sheet keeps its content while it fades out.
   const [selected, setSelected] = useState<PokemonListItem | null>(null);
   const [optionsVisible, setOptionsVisible] = useState(false);
+  const { data: selectedIsFav } = useIsFavorite(selected?.id ?? 0);
+  const toggleFavorite = useToggleFavorite();
 
   function showOptions(pokemon: PokemonListItem) {
     setSelected(pokemon);
@@ -142,6 +145,8 @@ export default function PokemonListScreen() {
         onClose={() => setOptionsVisible(false)}
         onOpen={handleOpen}
         onShare={handleShare}
+        isFavorite={selectedIsFav}
+        onToggleFavorite={() => selected && toggleFavorite(selected)}
       />
     </SafeAreaView>
   );
