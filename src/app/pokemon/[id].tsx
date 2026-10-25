@@ -16,7 +16,7 @@ import { StatsTab } from '@/components/stats-tab';
 import { TypePill } from '@/components/type-pill';
 import { Colors, Fonts, Spacing } from '@/constants/theme';
 import { usePokemonDetail } from '@/hooks/use-pokemon-detail';
-import { formatNumber, type PokemonListItem } from '@/utils/pokemon';
+import { formatNumber, getSpriteUrl, type PokemonListItem } from '@/utils/pokemon';
 
 const ARTWORK_SIZE = 220;
 // How far the artwork hangs below the blue top area into the white part.
@@ -61,7 +61,12 @@ export default function PokemonDetailScreen() {
 
   return (
     <View style={styles.screen}>
-      <DetailHeader title={pokemon.name} scrollY={scrollY} showActions />
+      <DetailHeader
+        title={pokemon.name}
+        scrollY={scrollY}
+        showActions
+        pokemon={{ id: pokemon.id, name: pokemon.name, spriteUrl: getSpriteUrl(pokemon.id) }}
+      />
       <Animated.ScrollView
         onScroll={onScroll}
         scrollEventThrottle={16}
