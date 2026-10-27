@@ -12,11 +12,14 @@ A Pokédex app (school final assignment) on [PokeAPI](https://pokeapi.co/docs/v2
 - Every load has a loading state and an error state with a "Try again" button.
 - Design: follow the Figma screenshots in `docs/figma/`. Font: Rubik (`Fonts` in the theme).
 - Specs: `specs/product.md` and `specs/features/*.md`. Build only what the feature spec says; its Out of Scope is a hard limit.
+- React Native 0.88's strict types don't accept `null` for FlatList's `ListHeaderComponent`/`ListFooterComponent`: pass `undefined`.
+- Typed routes (`.expo/types/router.d.ts`) are only regenerated while `npx expo start` runs. After adding a screen, start the dev server once, or `npm run typecheck` fails on the new route.
 
 ## Workflow
 
 - One GitHub issue per feature, one branch per issue: `feature/<issue-number>-<short-name>`.
 - First post a plan with a `- [ ]` task list on the issue (`gh issue comment`). Wait for my "go" before writing code.
+- This is Windows with PowerShell 5.1: pass issue comments and PR bodies to `gh` with `--body-file`, because inline quotes get mangled.
 - Small commits. Run `npm run lint` and `npm run typecheck` before saying a task is done.
 - Pull request body contains `closes #<number>`. Merge with a merge commit, **never squash**.
 - Never force-push, never rewrite history. My git history is part of my hand-in.
