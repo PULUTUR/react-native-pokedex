@@ -112,9 +112,10 @@ export function formatBaseExperience(xp: number | null): string {
   return xp === null ? '–' : `${xp} XP`;
 }
 
-// Share of the stat bar that is filled, between 0 and 1.
-export function getStatRatio(value: number): number {
-  return Math.min(Math.max(value / MAX_STAT_VALUE, 0), 1);
+// Share of the stat bar that is filled, between 0 and 1. `max` is only
+// different for Total on the compare screen (six stats added up).
+export function getStatRatio(value: number, max: number = MAX_STAT_VALUE): number {
+  return Math.min(Math.max(value / max, 0), 1);
 }
 
 function isPokemonType(name: string): name is PokemonType {

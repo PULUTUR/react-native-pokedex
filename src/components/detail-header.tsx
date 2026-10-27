@@ -39,6 +39,10 @@ function goBack() {
   }
 }
 
+function openComparePicker(pokemon: PokemonListItem) {
+  router.push({ pathname: '/compare/pick', params: { first: String(pokemon.id) } });
+}
+
 // Detail header from the Figma: back arrow, heart and compare. When scrolling
 // down it shows the name in the middle (Figma "Evolution Detail").
 export function DetailHeader({ title, scrollY, showActions = false, pokemon }: Props) {
@@ -72,8 +76,8 @@ export function DetailHeader({ title, scrollY, showActions = false, pokemon }: P
         <View style={[styles.side, styles.actions]}>
           {showActions && (
             <>
-              {/* No behaviour yet: compare comes with issue #6. */}
               <Pressable
+                onPress={() => pokemon && openComparePicker(pokemon)}
                 hitSlop={Spacing.sm}
                 accessibilityRole="button"
                 accessibilityLabel="Compare">

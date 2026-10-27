@@ -11,6 +11,9 @@ export const Colors = {
   primary: '#5631E8',
   onPrimary: '#FFFFFF',
   favorite: '#F25C6A',
+  // The two sides on the compare screen: the same purple and red as above.
+  compareFirst: '#5631E8',
+  compareSecond: '#F25C6A',
   border: '#E5E7F0',
   pill: '#DFE6F3',
   overlay: 'rgba(14, 9, 64, 0.35)',

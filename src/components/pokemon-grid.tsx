@@ -11,7 +11,7 @@ const COLUMN_GAP = Spacing.lg;
 type Props = {
   data: PokemonListItem[];
   onPokemonPress: (pokemon: PokemonListItem) => void;
-  onOptionsPress: (pokemon: PokemonListItem) => void;
+  onOptionsPress?: (pokemon: PokemonListItem) => void;
   header?: ReactElement | null;
   footer?: ReactElement | null;
   onEndReached?: () => void;
@@ -43,7 +43,7 @@ export function PokemonGrid({
           pokemon={item}
           width={cardWidth}
           onPress={() => onPokemonPress(item)}
-          onOptionsPress={() => onOptionsPress(item)}
+          onOptionsPress={onOptionsPress && (() => onOptionsPress(item))}
         />
       )}
       onEndReached={onEndReached}
