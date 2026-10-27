@@ -11,7 +11,8 @@ type Props = {
   pokemon: PokemonListItem;
   width: number;
   onPress: () => void;
-  onOptionsPress: () => void;
+  // Without it there is no ⋮ button, e.g. in the compare picker.
+  onOptionsPress?: () => void;
 };
 
 // Grid card from the Figma "Home" screen: number, sprite, name and ⋮ button.
@@ -43,13 +44,15 @@ export function PokemonCard({ pokemon, width, onPress, onOptionsPress }: Props) 
         <Text style={styles.name} numberOfLines={1}>
           {pokemon.name}
         </Text>
-        <Pressable
-          onPress={onOptionsPress}
-          hitSlop={Spacing.sm}
-          accessibilityRole="button"
-          accessibilityLabel={`Options for ${pokemon.name}`}>
-          <MaterialCommunityIcons name="dots-vertical" size={22} color={Colors.text} />
-        </Pressable>
+        {onOptionsPress && (
+          <Pressable
+            onPress={onOptionsPress}
+            hitSlop={Spacing.sm}
+            accessibilityRole="button"
+            accessibilityLabel={`Options for ${pokemon.name}`}>
+            <MaterialCommunityIcons name="dots-vertical" size={22} color={Colors.text} />
+          </Pressable>
+        )}
       </View>
     </Pressable>
   );
